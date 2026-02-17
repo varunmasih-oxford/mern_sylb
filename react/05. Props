@@ -1,0 +1,302 @@
+# 05 - Props in React (Component Inputs)
+
+---
+
+# 1. What are Props?
+
+Props (short for "properties") are used to pass data from one component to another.
+
+Props are:
+- Read-only
+- Passed from parent to child
+- Used to make components reusable
+
+Think of props like function parameters.
+
+---
+
+# 2. Passing Data via Props (Basic Example)
+
+## Step 1: Create Child Component
+
+Create `User.jsx`
+
+```jsx
+function User(props) {
+  return <h2>Hello {props.name}</h2>;
+}
+
+export default User;
+````
+
+---
+
+## Step 2: Pass Props from Parent
+
+In `App.jsx`
+
+```jsx
+import User from "./User";
+
+function App() {
+  return (
+    <div>
+      <User name="Varun" />
+      <User name="Rahul" />
+    </div>
+  );
+}
+
+export default App;
+```
+
+Output:
+Hello Varun
+Hello Rahul
+
+Each component receives different data.
+
+---
+
+# 3. Passing Multiple Props
+
+```jsx
+function User(props) {
+  return (
+    <div>
+      <h2>Name: {props.name}</h2>
+      <p>Role: {props.role}</p>
+    </div>
+  );
+}
+```
+
+Usage:
+
+```jsx
+<User name="Varun" role="Trainer" />
+```
+
+---
+
+# 4. Destructuring Props (Cleaner Way)
+
+Instead of writing:
+
+```jsx
+function User(props) {
+  return <h2>{props.name}</h2>;
+}
+```
+
+Use destructuring:
+
+```jsx
+function User({ name, role }) {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>{role}</p>
+    </div>
+  );
+}
+```
+
+This makes code cleaner and more readable.
+
+---
+
+# 5. Default Props
+
+Default props provide fallback values if no prop is passed.
+
+## Method 1: Default Parameters (Recommended)
+
+```jsx
+function User({ name = "Guest" }) {
+  return <h2>Hello {name}</h2>;
+}
+```
+
+If no name is passed:
+
+```jsx
+<User />
+```
+
+Output:
+Hello Guest
+
+---
+
+## Method 2: Using defaultProps (Older Method)
+
+```jsx
+User.defaultProps = {
+  name: "Guest"
+};
+```
+
+Note: Default parameters are preferred in modern React.
+
+---
+
+# 6. Passing Functions as Props
+
+Props can also pass functions.
+
+This allows child components to communicate with parent components.
+
+---
+
+## Step 1: Parent Component
+
+```jsx
+function App() {
+  function handleClick() {
+    alert("Button Clicked!");
+  }
+
+  return <Button onClick={handleClick} />;
+}
+```
+
+---
+
+## Step 2: Child Component
+
+```jsx
+function Button({ onClick }) {
+  return <button onClick={onClick}>Click Me</button>;
+}
+
+export default Button;
+```
+
+This is called "lifting state up".
+
+---
+
+# 7. Passing Data Back to Parent
+
+Example:
+
+## Parent
+
+```jsx
+function App() {
+  function receiveData(data) {
+    console.log(data);
+  }
+
+  return <Child sendData={receiveData} />;
+}
+```
+
+## Child
+
+```jsx
+function Child({ sendData }) {
+  return (
+    <button onClick={() => sendData("Hello Parent")}>
+      Send Data
+    </button>
+  );
+}
+```
+
+Now child sends data to parent.
+
+---
+
+# 8. Children Props
+
+React provides a special prop called `children`.
+
+It represents whatever is placed between component tags.
+
+---
+
+## Example
+
+```jsx
+function Card({ children }) {
+  return (
+    <div style={{ border: "1px solid black", padding: "10px" }}>
+      {children}
+    </div>
+  );
+}
+```
+
+Usage:
+
+```jsx
+<Card>
+  <h2>Title</h2>
+  <p>This is inside card.</p>
+</Card>
+```
+
+Everything inside `<Card>` becomes `children`.
+
+---
+
+# 9. Passing Objects as Props
+
+```jsx
+function User({ user }) {
+  return <h2>{user.name}</h2>;
+}
+```
+
+Usage:
+
+```jsx
+const userData = { name: "Varun", age: 25 };
+
+<User user={userData} />
+```
+
+---
+
+# 10. Passing Arrays as Props
+
+```jsx
+function List({ items }) {
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Usage:
+
+```jsx
+<List items={["React", "Node", "Django"]} />
+```
+
+---
+
+# 11. Important Props Rules
+
+1. Props are read-only.
+2. Props flow from parent to child.
+3. Never modify props directly.
+4. Use destructuring for cleaner code.
+5. Use keys when passing lists.
+
+---
+
+# 12. Props vs State
+
+| Props                     | State                       |
+| ------------------------- | --------------------------- |
+| Passed from parent        | Managed inside component    |
+| Read-only                 | Can change                  |
+| Makes components reusable | Controls component behavior |
+
