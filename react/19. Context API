@@ -1,0 +1,265 @@
+# 19 - React Context API
+
+---
+
+# 1. What is Context API?
+
+Context API is a built-in React feature used to manage **global state** without using Redux.
+
+It helps share data between components without passing props manually at every level.
+
+---
+
+# 2. The Prop Drilling Problem
+
+## What is Prop Drilling?
+
+Prop drilling happens when we pass data from a parent component to deeply nested child components through multiple levels.
+
+Example:
+
+App → Parent → Child → GrandChild
+
+If GrandChild needs data from App, we must pass props through Parent and Child even if they don’t use it.
+
+---
+
+## Example of Prop Drilling
+
+```jsx
+function App() {
+  const user = "Varun";
+  return <Parent user={user} />;
+}
+
+function Parent({ user }) {
+  return <Child user={user} />;
+}
+
+function Child({ user }) {
+  return <GrandChild user={user} />;
+}
+
+function GrandChild({ user }) {
+  return <h2>Hello {user}</h2>;
+}
+````
+
+Problem:
+
+* Unnecessary prop passing
+* Hard to maintain in large apps
+
+---
+
+# 3. Solution: Context API
+
+Context allows us to:
+
+* Create global data
+* Provide it to entire component tree
+* Access it anywhere without prop drilling
+
+---
+
+# 4. Creating Context (Step-by-Step)
+
+---
+
+## Step 1: Create Context
+
+Create file:
+
+```
+UserContext.jsx
+```
+
+```jsx
+import { createContext } from "react";
+
+const UserContext = createContext();
+
+export default UserContext;
+```
+
+---
+
+# 5. Provider and Consumer
+
+Context has two main parts:
+
+1. Provider → Supplies data
+2. Consumer → Uses data
+
+---
+
+## Step 2: Wrap App with Provider
+
+In `App.jsx`:
+
+```jsx
+import UserContext from "./UserContext";
+
+function App() {
+  const user = "Varun";
+
+  return (
+    <UserContext.Provider value={user}>
+      <Parent />
+    </UserContext.Provider>
+  );
+}
+
+export default App;
+```
+
+Now all child components can access `user`.
+
+---
+
+## Step 3: Using Consumer (Old Method)
+
+```jsx
+import UserContext from "./UserContext";
+
+function GrandChild() {
+  return (
+    <UserContext.Consumer>
+      {(user) => <h2>Hello {user}</h2>}
+    </UserContext.Consumer>
+  );
+}
+```
+
+Consumer works but is not commonly used now.
+
+---
+
+# 6. useContext Hook (Modern Method)
+
+Modern React uses the `useContext` hook.
+
+---
+
+## Step 4: Use useContext
+
+```jsx
+import { useContext } from "react";
+import UserContext from "./UserContext";
+
+function GrandChild() {
+  const user = useContext(UserContext);
+
+  return <h2>Hello {user}</h2>;
+}
+```
+
+This is clean and recommended.
+
+---
+
+# 7. Full Working Example
+
+### App.jsx
+
+```jsx
+import UserContext from "./UserContext";
+import Parent from "./Parent";
+
+function App() {
+  const user = "Varun";
+
+  return (
+    <UserContext.Provider value={user}>
+      <Parent />
+    </UserContext.Provider>
+  );
+}
+
+export default App;
+```
+
+### Parent.jsx
+
+```jsx
+import Child from "./Child";
+
+function Parent() {
+  return <Child />;
+}
+
+export default Parent;
+```
+
+### Child.jsx
+
+```jsx
+import GrandChild from "./GrandChild";
+
+function Child() {
+  return <GrandChild />;
+}
+
+export default Child;
+```
+
+### GrandChild.jsx
+
+```jsx
+import { useContext } from "react";
+import UserContext from "./UserContext";
+
+function GrandChild() {
+  const user = useContext(UserContext);
+
+  return <h2>Hello {user}</h2>;
+}
+
+export default GrandChild;
+```
+
+---
+
+# 8. Passing Objects in Context
+
+Context can pass objects too.
+
+```jsx
+<UserContext.Provider value={{ name: "Varun", role: "Trainer" }}>
+```
+
+Access:
+
+```jsx
+const data = useContext(UserContext);
+console.log(data.name);
+```
+
+---
+
+# 9. When to Use Context API
+
+Use Context when:
+
+* Theme (dark/light mode)
+* Authenticated user
+* Language settings
+* Global settings
+
+Avoid Context when:
+
+* Very complex state logic
+* Large enterprise apps (Redux may be better)
+
+---
+
+# 10. Context API vs Redux
+
+| Context API                | Redux                 |
+| -------------------------- | --------------------- |
+| Built-in React             | External library      |
+| Simple setup               | More structure        |
+| Good for small/medium apps | Better for large apps |
+| No middleware              | Supports middleware   |
+
+---
